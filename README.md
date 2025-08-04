@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="imgs/logo.png" alt="PS Vita Media Processor Logo" width="400">
+  <img src="imgs/logo.png" alt="PS Vita Media Processor Logo" width="500">
 </p>
 
 <p align="center">
