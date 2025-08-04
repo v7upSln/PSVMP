@@ -83,16 +83,12 @@ pip install yt-dlp
 python psvid.py --check-deps
 ```
 
----
-
 ## PS Vita Setup
 
 1. Install VitaShell on your PS Vita
 2. Launch VitaShell and press `SELECT` to start the FTP server
 3. Note the **IP** and **Port** address shown on your PS Vita
 4. Ensure your computer and PS Vita are connected to the same Wi-Fi network
-
----
 
 ## Usage
 
@@ -131,14 +127,10 @@ optional arguments:
   --check-deps          Check if required dependencies are installed
 ```
 
----
-
 ## Output Locations
 
 * Videos: `ux0:/video/anime/` (MP4 format)
 * Music: `ux0:/music/` (MP3 format)
-
----
 
 ## Technical Details
 
@@ -154,8 +146,6 @@ optional arguments:
 * Format: MP3
 * Bitrate: 320kbps
 * Sample Rate: 44.1kHz
-
----
 
 ## Troubleshooting
 
