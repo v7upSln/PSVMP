@@ -79,7 +79,7 @@ pip install yt-dlp
 ### 4. Verify installation
 
 ```bash
-python psvid.py --check-deps
+python psmedia.py --check-deps
 ```
 
 ## PS Vita Setup
