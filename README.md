@@ -5,7 +5,6 @@
 <p align="center">
   <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.8%2B-blue.svg" alt="Python Version"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License"></a>
-  <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"></a>
 </p>
 
 ---
@@ -40,8 +39,8 @@
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/R0salman/psvita-media-processor.git
-cd psvita-media-processor
+https://github.com/R0salman/PSVMP.git
+cd PSVMP
 ```
 
 ### 2. Install Python dependencies
@@ -97,19 +96,19 @@ python psvid.py --check-deps
 Download and convert a YouTube video:
 
 ```bash
-python psvid.py "https://www.youtube.com/watch?v=VIDEO_ID" --type video
+python psmedia.py "https://www.youtube.com/watch?v=VIDEO_ID" --type video
 ```
 
 Download and convert SoundCloud music:
 
 ```bash
-python psvid.py "https://soundcloud.com/artist/track" --type music
+python psmedia.py "https://soundcloud.com/artist/track" --type music
 ```
 
 Download from Mega.nz with custom Vita IP:
 
 ```bash
-python psvid.py "https://mega.nz/file/..." --ip 192.168.1.100 --port 1337
+python psmedia.py "https://mega.nz/file/..." --ip 192.168.1.100 --port 1337
 ```
 
 
@@ -151,7 +150,7 @@ optional arguments:
 
 ### "Missing required tools" error
 
-* Run `python psvid.py --check-deps`
+* Run `python psmedia.py --check-deps`
 * Follow the installation instructions for any missing dependencies
 
 ### FTP connection failed
