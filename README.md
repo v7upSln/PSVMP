@@ -128,7 +128,7 @@ optional arguments:
 
 ## Output Locations
 
-* Videos: `ux0:/video/anime/` (MP4 format)
+* Videos: `ux0:/video/shows/` (MP4 format)
 * Music: `ux0:/music/` (MP3 format)
 
 ## Technical Details
