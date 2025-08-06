@@ -129,6 +129,7 @@ def download_from_mega(url):
     """Download from Mega.nz using megatools"""
     create_folders()
     print(f"Downloading from Mega: {url}")
+    sys.stdout.flush()
     
     try:
         # Try megatools-dl first, then fall back to megatools
@@ -141,7 +142,27 @@ def download_from_mega(url):
         ]
         
         print("Running megatools download...")
-        result = subprocess.run(cmd, check=True, capture_output=True, text=True)
+        sys.stdout.flush()
+        
+        # Run with real-time output
+        process = subprocess.Popen(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            universal_newlines=True,
+            encoding='utf-8',
+            errors='replace'
+        )
+        
+        # Show real-time download progress
+        for line in process.stdout:
+            if line.strip():  # Only print non-empty lines
+                print(line.strip(), flush=True)
+        
+        process.wait()
+        
+        if process.returncode != 0:
+            raise subprocess.CalledProcessError(process.returncode, cmd)
         
         # Find downloaded file
         downloaded_files = [f for f in os.listdir(TEMP_FOLDER) 
@@ -154,11 +175,12 @@ def download_from_mega(url):
             key=lambda x: os.path.getmtime(os.path.join(TEMP_FOLDER, x))
         ))
         
-        print(f"Downloaded: {file_path}")
+        print(f"Download completed: {file_path}")
+        sys.stdout.flush()
         return file_path
         
     except subprocess.CalledProcessError as e:
-        raise Exception(f"Mega download failed: {e.stderr}")
+        raise Exception(f"Mega download failed")
     except Exception as e:
         raise Exception(f"Mega download error: {str(e)}")
 
@@ -201,21 +223,23 @@ def download_with_ytdlp(url, media_type='video'):
     cleanup_temp_files(TEMP_FOLDER)  # Clean up any previous incomplete downloads
     
     print(f"Downloading with yt-dlp: {url}")
+    sys.stdout.flush()  # Force immediate output
     
-    # First, get metadata for music files
+    # First, get metadata for music files...
     metadata = None
     if media_type == 'music':
         print("Extracting metadata...")
+        sys.stdout.flush()
         metadata = get_metadata_from_url(url)
         if metadata:
             print(f"Found: {metadata['title']} by {metadata['artist']}")
+            sys.stdout.flush()
     
     try:
         # Generate a safe filename template with ASCII fallback
         safe_template = os.path.join(TEMP_FOLDER, '%(title).80s.%(ext)s')
         
         if media_type == 'music':
-            # For music, use a more robust approach for SoundCloud
             url_type = detect_url_type(url)
             
             if url_type == 'soundcloud':
@@ -255,7 +279,7 @@ def download_with_ytdlp(url, media_type='video'):
                     url
                 ]
         else:
-            # For video, download best quality
+            # For video
             cmd = [
                 'yt-dlp',
                 '-f', 'best[height<=720]/best',  # Limit to 720p for Vita compatibility
@@ -270,20 +294,28 @@ def download_with_ytdlp(url, media_type='video'):
         
         print("Running yt-dlp download...")
         print(f"Command: {' '.join(cmd[:3])}...")  # Show partial command for debugging
+        sys.stdout.flush()
         
-        # Run the download with proper error handling
-        result = subprocess.run(
+        # Run the download with real-time output
+        process = subprocess.Popen(
             cmd,
-            capture_output=True,
-            text=True,
-            timeout=300,  # 5 minute timeout
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            universal_newlines=True,
             encoding='utf-8',
             errors='replace'
         )
         
-        if result.returncode != 0:
-            print(f"yt-dlp stderr: {result.stderr}")
-            raise subprocess.CalledProcessError(result.returncode, cmd)
+        # Show real-time download progress
+        for line in process.stdout:
+            if line.strip():  # Only print non-empty lines
+                if '[download]' in line or 'ERROR:' in line or 'WARNING:' in line:
+                    print(line.strip(), flush=True)
+        
+        process.wait()
+        
+        if process.returncode != 0:
+            raise subprocess.CalledProcessError(process.returncode, cmd)
         
         # Wait a moment for file system to sync
         time.sleep(1)
@@ -318,7 +350,8 @@ def download_with_ytdlp(url, media_type='video'):
         if media_type == 'music' and metadata:
             file_path = embed_metadata_with_ffmpeg(file_path, metadata)
         
-        print(f"Downloaded: {file_path}")
+        print(f"Download completed: {file_path}")
+        sys.stdout.flush()
         return file_path
         
     except subprocess.TimeoutExpired:
@@ -326,7 +359,7 @@ def download_with_ytdlp(url, media_type='video'):
         raise Exception("Download timed out (5 minutes)")
     except subprocess.CalledProcessError as e:
         cleanup_temp_files(TEMP_FOLDER)
-        raise Exception(f"yt-dlp download failed with code {e.returncode}: {e.stderr}")
+        raise Exception(f"yt-dlp download failed with code {e.returncode}")
     except Exception as e:
         cleanup_temp_files(TEMP_FOLDER)
         raise Exception(f"yt-dlp download error: {str(e)}")
@@ -502,7 +535,7 @@ def embed_metadata_with_ffmpeg(input_file, metadata):
     return input_file
 
 def convert_for_vita_music(input_file, output_file):
-    """Convert audio to MP3 for PS Vita with proper metadata preservation"""
+    """Convert audio to MP3 for PS Vita with proper metadata handling"""
     print("Converting audio to MP3 for PS Vita...")
     
     if not verify_media_file(input_file, 'audio'):
@@ -573,9 +606,11 @@ def extract_metadata_from_file(file_path):
     return None
 
 def run_ffmpeg_conversion(cmd, input_file, output_file, media_type):
-    """Run FFmpeg conversion with progress display and proper encoding"""
+    """Run FFmpeg conversion"""
     try:
         print("Running FFmpeg conversion...")
+        print("Please wait, this may take a few minutes...")
+        sys.stdout.flush()  # Force immediate output
         
         # Use proper encoding for subprocess
         process = subprocess.Popen(
@@ -587,16 +622,26 @@ def run_ffmpeg_conversion(cmd, input_file, output_file, media_type):
             errors='replace'
         )
         
+        # Track progress with real-time updates
+        last_time = ""
         for line in process.stdout:
             if 'time=' in line:
-                # Safely handle Unicode in progress output
+                # Extract time information for progress
                 try:
-                    print(f"\rConverting... {line.strip()}", end='', flush=True)
-                except UnicodeEncodeError:
-                    print(f"\rConverting...", end='', flush=True)
+                    # Extract just the time part
+                    import re
+                    time_match = re.search(r'time=(\S+)', line)
+                    if time_match:
+                        current_time = time_match.group(1)
+                        if current_time != last_time:
+                            print(f"Converting... time={current_time}", flush=True)
+                            last_time = current_time
+                except:
+                    print("Converting...", flush=True)
+            elif 'error' in line.lower() or 'failed' in line.lower():
+                print(f"Warning: {line.strip()}", flush=True)
         
         process.wait()
-        print()  # New line after progress
         
         if process.returncode != 0:
             raise subprocess.CalledProcessError(process.returncode, cmd)
@@ -604,8 +649,13 @@ def run_ffmpeg_conversion(cmd, input_file, output_file, media_type):
         # Verify the output file
         if not verify_media_file(output_file, media_type):
             raise Exception("Conversion failed - output file is invalid")
-            
-        print(f"Conversion completed: {os.path.basename(output_file)}")
+        
+        print("=" * 50, flush=True)
+        print("CONVERSION COMPLETED SUCCESSFULLY!", flush=True)
+        print(f"Output file: {os.path.basename(output_file)}", flush=True)
+        print(f"File size: {os.path.getsize(output_file) / (1024*1024):.1f} MB", flush=True)
+        print("=" * 50, flush=True)
+        
         return output_file
         
     except subprocess.CalledProcessError as e:
@@ -619,10 +669,20 @@ def process_media(url, vita_ip, vita_port, media_type='video'):
             return False
         
         # 1. Download media
+        print("=" * 50)
+        print("STEP 1: DOWNLOADING MEDIA")
+        print("=" * 50)
+        sys.stdout.flush()
         downloaded_file = download_media(url, media_type)
-        print(f"Verified download: {downloaded_file}")
+        print("Download completed successfully!")
+        sys.stdout.flush()
         
         # 2. Convert media
+        print("\n" + "=" * 50)
+        print("STEP 2: CONVERTING FOR PS VITA")
+        print("=" * 50)
+        sys.stdout.flush()
+        
         if media_type == 'music':
             output_extension = ".mp3"
             vita_path = VITA_MUSIC_PATH
@@ -638,12 +698,15 @@ def process_media(url, vita_ip, vita_port, media_type='video'):
         output_path = os.path.join(CONVERTED_FOLDER, output_filename)
         
         converted_file = conversion_func(downloaded_file, output_path)
-        print(f"Successfully converted: {converted_file}")
         
         # 3. Transfer to Vita
-        print(f"\nInitiating Vita transfer to {vita_path}...")
-        print(f"Make sure VitaShell FTP is running (Press SELECT in VitaShell)")
+        print("\n" + "=" * 50)
+        print("STEP 3: TRANSFERRING TO PS VITA")
+        print("=" * 50)
+        print(f"Target: {vita_path}")
+        print("Make sure VitaShell FTP is running (Press SELECT in VitaShell)")
         print("Waiting 3 seconds for you to confirm...")
+        sys.stdout.flush()
         time.sleep(3)
         
         ftp = VitaFTP(vita_ip, vita_port)
@@ -651,27 +714,32 @@ def process_media(url, vita_ip, vita_port, media_type='video'):
         
         def progress_callback(message):
             print(f"  {message}")
+            sys.stdout.flush()
         
         if ftp.transfer(converted_file, remote_path, progress_callback):
-            print(f"\nSuccess! {media_type.capitalize()} transferred to your PS Vita")
+            print("\n" + "=" * 50)
+            print(f"SUCCESS! {media_type.upper()} TRANSFERRED TO PS VITA")
+            print("=" * 50)
             print(f"File location: {vita_path}{os.path.basename(converted_file)}")
             
             # Clean up
             print("\nCleaning up temporary files...")
+            sys.stdout.flush()
             os.remove(downloaded_file)
-            print(f"Deleted temporary download: {downloaded_file}")
+            print(f"Deleted temporary download: {os.path.basename(downloaded_file)}")
+            sys.stdout.flush()
             
             keep_converted = input("Keep converted file for backup? (y/n): ").strip().lower()
             if keep_converted != 'y':
                 os.remove(converted_file)
-                print(f"Deleted converted file: {converted_file}")
+                print(f"Deleted converted file: {os.path.basename(converted_file)}")
             else:
                 print(f"Converted file kept at: {converted_file}")
             
             return True
         
     except Exception as e:
-        print(f"\nError: {str(e)}", file=sys.stderr)
+        print(f"\nERROR: {str(e)}", file=sys.stderr)
         
         # Clean up on error
         cleanup_temp_files(TEMP_FOLDER)
@@ -687,7 +755,7 @@ def process_media(url, vita_ip, vita_port, media_type='video'):
                 for file in temp_files:
                     try:
                         os.remove(file)
-                        print(f"Deleted: {file}")
+                        print(f"Deleted: {os.path.basename(file)}")
                     except:
                         pass
         
