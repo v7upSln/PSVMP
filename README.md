@@ -121,7 +121,7 @@ positional arguments:
 optional arguments:
   -h, --help            Show this help message and exit
   --type {video,music}  Type of media to process (default: video)
-  --ip IP               PS Vita IP address (default: 192.168.1.11)
+  --ip IP               PS Vita IP address (default: 192.168.1.7)
   --port PORT           PS Vita FTP port (default: 1337)
   --check-deps          Check if required dependencies are installed
 ```
