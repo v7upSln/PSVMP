@@ -39,7 +39,7 @@
 ### 1. Clone the repository
 
 ```bash
-https://github.com/R0salman/PSVMP.git
+git clone https://github.com/R0salman/PSVMP.git
 cd PSVMP
 ```
 
