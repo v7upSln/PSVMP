@@ -126,6 +126,16 @@ optional arguments:
   --check-deps          Check if required dependencies are installed
 ```
 
+## 📺 Tutorial
+
+Watch the full tutorial on how to use PSVMP:
+
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=Ej24JAy4vIM">
+    <img src="https://img.youtube.com/vi/Ej24JAy4vIM/hqdefault.jpg" width="720" alt="Watch the tutorial video">
+  </a>
+</p>
+
 ## Output Locations
 
 * Videos: `ux0:/video/shows/` (MP4 format)
