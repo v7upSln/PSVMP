@@ -1,3 +1,5 @@
+PyQt6==6.9.1
+pyqt6_sip==13.10.2
+Requests==2.32.4
 tqdm==4.67.1
 argparse>=1.4.0
-requests>=2.31.0

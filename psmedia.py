@@ -3,11 +3,10 @@
 # https://github.com/R0salman
 
 # Set UTF-8 encoding for Windows
-import sys
-if sys.platform.startswith('win'):
-    import codecs
-    sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer, 'strict')
-    sys.stderr = codecs.getwriter('utf-8')(sys.stderr.buffer, 'strict')
+import sys, io
+
+sys.stdout = io.TextIOWrapper(sys.stdout.detach(), encoding="utf-8", errors="replace")
+sys.stderr = io.TextIOWrapper(sys.stderr.detach(), encoding="utf-8", errors="replace")
 
 logo = """
  ######   #####  #     # #     # ######  
@@ -18,6 +17,8 @@ logo = """
  #       #     #   # #   #     # #       
  #        #####     #    #     # #       
 """
+
+from VERSION import VERSION
 
 import os
 import sys
@@ -33,6 +34,7 @@ from urllib.parse import urlparse
 import glob
 import json
 import unicodedata
+import os
 
 # Configuration
 DEFAULT_VITA_IP = "192.168.1.7"
@@ -41,8 +43,17 @@ VITA_VIDEO_PATH = "ux0:/video/shows/"
 VITA_MUSIC_PATH = "ux0:/music/"
 MAX_RETRIES = 5
 RETRY_DELAY = 3  # seconds
-TEMP_FOLDER = "psvita_temp"
-CONVERTED_FOLDER = "psvita_converted"
+
+USER_DOCS = os.path.join(os.path.expanduser("~"), "Documents")
+BASE_DOCS_DIR = os.path.join(USER_DOCS, "PSvita media processer")
+
+TEMP_FOLDER = os.path.join(BASE_DOCS_DIR, "temp")
+CONVERTED_FOLDER = os.path.join(BASE_DOCS_DIR, "converted")
+
+
+# Ensure folders exist at startup
+os.makedirs(TEMP_FOLDER, exist_ok=True)
+os.makedirs(CONVERTED_FOLDER, exist_ok=True)
 
 def sanitize_filename(filename):
     """Sanitize filename for filesystem compatibility while preserving Unicode"""
@@ -439,6 +450,7 @@ class VitaFTP:
                             
                             remote_filename = os.path.basename(remote_path)
                             ftp.storbinary(f"STOR {remote_filename}", f, callback=callback)
+                            print()
                     
                     if progress_callback:
                         progress_callback("Transfer completed successfully")
@@ -768,6 +780,8 @@ def main():
     parser.add_argument('--ip', default=DEFAULT_VITA_IP,  help=f'PS Vita IP address (default: {DEFAULT_VITA_IP})')
     parser.add_argument('--port', type=int, default=DEFAULT_VITA_PORT,  help=f'PS Vita FTP port (default: {DEFAULT_VITA_PORT})')
     parser.add_argument('--check-deps', action='store_true', help='Check if required dependencies are installed')
+    parser.add_argument('--gui', action='store_true', help='Launch the GUI interface')
+    parser.add_argument('-v', '--version', action='store_true', help='Show version information and exit')
     
     args = parser.parse_args()
     
@@ -776,12 +790,25 @@ def main():
             print("All required dependencies are installed!")
         sys.exit(0)
     
+    if args.version:
+        print(f"PS Vita Media Processor Version {VERSION}")
+        sys.exit(0)
+
+    if "--gui" in sys.argv:
+        from gui import PSVitaMediaGUI
+        from PyQt6.QtWidgets import QApplication
+        app = QApplication(sys.argv)
+        gui = PSVitaMediaGUI()
+        gui.show()
+        sys.exit(app.exec())
+
     # Check if URL is provided when not just checking dependencies
     if not args.url:
         parser.error("URL is required unless using --check-deps")
     
     print(logo)
     print(f"    PS Vita Media Processor")
+    print(f"        Version {VERSION}")
     print("-" * 50)
     print(f"Media Type: {args.type.upper()}")
     print(f"Vita IP: {args.ip}:{args.port}")
