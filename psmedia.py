@@ -21,7 +21,6 @@ logo = """
 from VERSION import VERSION
 
 import os
-import sys
 import argparse
 import subprocess
 import ftplib
@@ -34,7 +33,6 @@ from urllib.parse import urlparse
 import glob
 import json
 import unicodedata
-import os
 
 # Configuration
 DEFAULT_VITA_IP = "192.168.1.7"
