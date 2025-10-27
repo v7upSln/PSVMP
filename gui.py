@@ -29,7 +29,7 @@ except Exception:
     APP_VERSION = "unknown"
 
 APP_NAME = "PSVMP – PS Vita Media Processor"
-GITHUB_URL = "https://github.com/R0salman/PSVMP"
+GITHUB_URL = "https://github.com/v7upSln/PSVMP"
 
 
 class LogStream(QObject):
