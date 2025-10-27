@@ -53,7 +53,7 @@ pip install psvmp
 #### 1. Clone the repository
 
 ```bash
-git clone https://github.com/R0salman/PSVMP.git
+git clone https://github.com/v7upSln/PSVMP.git
 cd PSVMP
 ```
 
