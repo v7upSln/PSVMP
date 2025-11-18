@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# https://github.com/R0salman
+# https://github.com/v7upSln
 
 # Set UTF-8 encoding for Windows
 import sys, io
