@@ -2,7 +2,7 @@ import requests
 from packaging import version
 
 try:
-    from psvmp.VERSION import VERSION
+    from .VERSION import VERSION
 except ImportError:
     from VERSION import VERSION
 
