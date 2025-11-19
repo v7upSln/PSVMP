@@ -10,19 +10,8 @@
 
 ---
 
-## Features
-
-* Multi-platform support: Mega.nz, YouTube, SoundCloud, and more
-* Modern GUI interface with dark/light themes
-* Command-line interface for advanced users
-* Automatic media conversion for PS Vita compatibility
-* Direct FTP transfer to your PS Vita
-* Optimized output: video (960x544), audio (MP3 320kbps)
-* Real-time download and conversion progress
-* Smart file management with organized storage
-* Built-in update checker
-* Enhanced metadata handling for music files
-* Optional automatic cleanup of temporary files
+> **Note:** All GUI components have been removed so the GUI can run as a standalone application.  
+> Sometimes the app may not work properly — make sure you update `yt-dlp` or any external tool you are using.
 
 ## Supported Sources
 
@@ -33,11 +22,11 @@
 
 ## Requirements
 
-* Python 3.8 or later
-* FFmpeg
-* yt-dlp
-* megatools
-* PyQt6 (for GUI interface)
+* Python 3.8 or later  
+* FFmpeg  
+* yt-dlp  
+* megatools  
+* PyQt6 (for GUI interface)  
 * PS Vita with VitaShell (FTP enabled)
 
 ## Installation
@@ -46,7 +35,7 @@
 
 ```bash
 pip install psvmp
-```
+````
 
 ### Method 2: Manual Installation
 
@@ -67,13 +56,13 @@ pip install tqdm yt-dlp PyQt6
 
 ##### Windows
 
-* [Download FFmpeg](https://ffmpeg.org/download.html)
-* [Download megatools](https://megatools.megous.com/)
+* Download FFmpeg
+* Download megatools
 * Install yt-dlp:
 
-  ```bash
-  pip install yt-dlp
-  ```
+```bash
+pip install yt-dlp
+```
 
 ##### Linux (Ubuntu/Debian)
 
@@ -100,52 +89,32 @@ python psmedia.py --check-deps
 
 1. Install VitaShell on your PS Vita
 2. Launch VitaShell and press `SELECT` to start the FTP server
-3. Note the **IP** and **Port** address shown on your PS Vita
-4. Ensure your computer and PS Vita are connected to the same Wi-Fi network
+3. Note the **IP** and **Port** shown on the PS Vita
+4. Ensure your computer and PS Vita are on the same network
 
 ## Usage
 
-### GUI Interface
-
-Launch the graphical interface:
-
-```bash
-python psmedia.py --gui
-```
-
-The GUI provides an intuitive interface with the following features:
-
-* Clean, modern design with dark/light theme options
-* Paste button for easy URL input
-* Real-time console output with color-coded messages
-* Progress tracking with visual feedback
-* File management tools (open output folder, delete files)
-* Built-in update checker
-* One-click processing workflow
-
-### Command Line Interface
-
 #### Basic Examples
 
-Download and convert a YouTube video:
+YouTube video:
 
 ```bash
 python psmedia.py "https://www.youtube.com/watch?v=VIDEO_ID" --type video
 ```
 
-Download and convert SoundCloud music:
+SoundCloud music:
 
 ```bash
 python psmedia.py "https://soundcloud.com/artist/track" --type music
 ```
 
-Download from Mega.nz with custom Vita IP:
+Mega.nz:
 
 ```bash
 python psmedia.py "https://mega.nz/file/..." --ip 192.168.1.100 --port 1337
 ```
 
-Check version:
+Version:
 
 ```bash
 python psmedia.py --version
@@ -154,22 +123,39 @@ python psmedia.py --version
 ## Command Line Options
 
 ```
-positional arguments:
-  url                   URL of the media file (Mega.nz, YouTube, SoundCloud, etc.)
+usage: psmedia.py [-h] [--type {video,music}] [--ip IP] [--port PORT]
+                  [--check-deps] [-v] [-u] [--history] [--history-clear]
+                  [--history-limit HISTORY_LIMIT] [--config]
+                  [--config-set KEY=VALUE] [--config-show]
+                  [url]
 
-optional arguments:
-  -h, --help            Show this help message and exit
+PS Vita Media Processor
+
+positional arguments:
+  url                   URL of the media file (Mega.nz, YouTube, SoundCloud,
+                        etc.)
+
+options:
+  -h, --help            show this help message and exit
   --type {video,music}  Type of media to process (default: video)
   --ip IP               PS Vita IP address (default: 192.168.1.7)
   --port PORT           PS Vita FTP port (default: 1337)
   --check-deps          Check if required dependencies are installed
-  --gui                 Launch the GUI interface
   -v, --version         Show version information and exit
+  -u, --update          Check for updates and exit
+  --history             Show download history
+  --history-clear       Clear download history
+  --history-limit HISTORY_LIMIT
+                        Number of history entries to show (default: 10)
+
+configuration options:
+  --config, -c          Show configuration file location and current settings
+  --config-set KEY=VALUE
+                        Set configuration value (can be used multiple times)
+  --config-show         Show current configuration
 ```
 
 ## Tutorial
-
-Watch the full tutorial on how to use PSVMP:
 
 <p align="center">
   <a href="https://www.youtube.com/watch?v=Ej24JAy4vIM">
@@ -179,78 +165,68 @@ Watch the full tutorial on how to use PSVMP:
 
 ## File Organization
 
-The application now uses an organized folder structure in your Documents directory:
-
 ```
 Documents/PSvita media processer/
 ├── temp/           # Temporary downloads
-└── converted/      # Processed files ready for Vita
+└── converted/      # Files ready for PS Vita
 ```
 
 ## Output Locations
 
-* Videos: `ux0:/video/shows/` (MP4 format)
-* Music: `ux0:/music/` (MP3 format with embedded metadata)
+* Videos → `ux0:/video/shows/`
+* Music → `ux0:/music/`
 
 ## Technical Details
 
 ### Video Conversion
 
-* Resolution: 960x544 (PS Vita native)
-* Codec: H.264 Baseline Profile
+* Resolution: 960×544
+* Codec: H.264 Baseline
 * Bitrate: 1500k (max 2000k)
-* Audio: AAC 128kbps, 44.1kHz
+* Audio: AAC 128kbps
 
 ### Audio Conversion
 
-* Format: MP3
-* Bitrate: 320kbps
-* Sample Rate: 44.1kHz
-* Metadata: ID3v2.3 tags preserved and embedded
+* MP3 at 320kbps
+* 44.1kHz
+* Metadata preserved
 
 ## Troubleshooting
 
-### "Missing required tools" error
+### “Missing required tools”
 
-* Run `python psmedia.py --check-deps`
-* Follow the installation instructions for any missing dependencies
+* Run: `python psmedia.py --check-deps`
+* Install missing dependencies
 
-### FTP connection failed
+### FTP connection issues
 
-* Confirm that VitaShell FTP server is running (press `SELECT` in VitaShell)
-* Check that your PS Vita and PC are on the same network
-* Verify that the IP address and port are correct
+* Ensure VitaShell FTP is active
+* Confirm IP/port
+* Same network required
 
 ### Download failed
 
-* Retry the command (some sites rate-limit)
-* For Mega links, confirm the link is still valid
-* Check your internet connection
+* Retry
+* Update `yt-dlp`
+* Check Mega link validity
 
 ### Conversion failed
 
-* Ensure the downloaded file is not corrupted
-* Confirm FFmpeg is installed and on your system path
-* Try using a different media source
-
-### GUI Issues
-
-* Ensure PyQt6 is installed: `pip install PyQt6`
-* Try running with `--gui` flag
-* Check console output for detailed error messages
+* Ensure file integrity
+* Verify FFmpeg installation
+* Try another source
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [MIT License](LICENSE)
 
 ## Acknowledgments
 
-* Thanks to the VitaShell team for the FTP server functionality.  
-* Thanks to the FFmpeg team for media processing.  
-* Thanks to the yt-dlp developers for download handling.  
-* Thanks to the megatools developers for Mega.nz support.  
-* Thanks to the PyQt team for the GUI framework.  
+* VitaShell team
+* FFmpeg team
+* yt-dlp developers
+* megatools developers
 
 ---
 
-<p align=center ><b>Made with ❤️ for the PS Vita community</b></p>
+<p align="center"><b>Made with ❤️ for the PS Vita community</b></p>
