@@ -25,8 +25,7 @@
 * Python 3.8 or later  
 * FFmpeg  
 * yt-dlp  
-* megatools  
-* PyQt6 (for GUI interface)  
+* megatools
 * PS Vita with VitaShell (FTP enabled)
 
 ## Installation
