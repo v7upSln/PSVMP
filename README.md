@@ -11,7 +11,7 @@
 ---
 
 > **Note:** The GUI components were removed so the application can run as a standalone tool. The GUI version is available in the releases.   
-> Sometimes the app may not work properly — make sure you update `yt-dlp` or any external tool you are using.
+> If the app isn't working properly, make sure you update yt-dlp.
 
 ## Supported Sources
 
