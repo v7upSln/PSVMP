@@ -10,7 +10,7 @@
 
 ---
 
-> **Note:** All GUI components have been removed so the GUI can run as a standalone application.  
+> **Note:** The GUI components were removed so the application can run as a standalone tool. The GUI version is available in the releases.
 > Sometimes the app may not work properly — make sure you update `yt-dlp` or any external tool you are using.
 
 ## Supported Sources
