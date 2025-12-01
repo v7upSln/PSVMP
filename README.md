@@ -68,7 +68,7 @@ pip install yt-dlp
 ```bash
 sudo apt update
 sudo apt install ffmpeg megatools
-pip install yt-dlp PyQt6
+pip install yt-dlp
 ```
 
 ##### macOS
