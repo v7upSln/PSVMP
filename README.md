@@ -75,7 +75,7 @@ pip install yt-dlp
 
 ```bash
 brew install ffmpeg megatools
-pip install yt-dlp PyQt6
+pip install yt-dlp
 ```
 
 #### 4. Verify installation
